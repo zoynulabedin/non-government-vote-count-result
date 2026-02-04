@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  SUB_USER
+}
+
+enum UnionType {
+  UNION
+  POURASHAVA
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  email     String?  @unique
+  mobile    String?
+  role      UserRole @default(SUB_USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // For Sub-Users
+  assignedCenters VoteCenter[]
+  voteEntries     VoteEntry[]
+}
+
+model Division {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  districts  District[]
+  candidates Candidate[]
+}
+
+model District {
+  id             String         @id @default(uuid())
+  name           String
+  divisionId     String
+  division       Division       @relation(fields: [divisionId], references: [id])
+  constituencies Constituency[]
+  upazilas       Upazila[]
+  candidates     Candidate[]
+}
+
+model Constituency {
+  id         String      @id @default(uuid())
+  name       String // e.g. "Pabna Parliamentary Constituency 1"
+  seatNumber String? // e.g. "Pabna-1"
+  districtId String
+  district   District    @relation(fields: [districtId], references: [id])
+  upazilas   Upazila[]
+  candidates Candidate[]
+}
+
+model Upazila {
+  id             String        @id @default(uuid())
+  name           String
+  districtId     String
+  district       District      @relation(fields: [districtId], references: [id])
+  constituencyId String?
+  constituency   Constituency? @relation(fields: [constituencyId], references: [id])
+  unions         Union[]
+  candidates     Candidate[]
+}
+
+model Union {
+  id         String       @id @default(uuid())
+  name       String
+  type       UnionType    @default(UNION)
+  upazilaId  String
+  upazila    Upazila      @relation(fields: [upazilaId], references: [id])
+  centers    VoteCenter[]
+  candidates Candidate[]
+}
+
+model VoteCenter {
+  id      String @id @default(uuid())
+  name    String
+  unionId String
+  union   Union  @relation(fields: [unionId], references: [id])
+
+  // Assignments
+  assignedToUserId String?
+  assignedToUser   User?   @relation(fields: [assignedToUserId], references: [id])
+
+  voteEntries VoteEntry[]
+}
+
+model Candidate {
+  id         String  @id @default(uuid())
+  name       String
+  party      String // e.g., BNP, AL, Jamat
+  symbol     String? // URL or name
+  seatNumber String? // e.g., Dhaka-10
+
+  // Location Scope
+  divisionId String?
+  division   Division? @relation(fields: [divisionId], references: [id])
+
+  districtId String?
+  district   District? @relation(fields: [districtId], references: [id])
+
+  constituencyId String?
+  constituency   Constituency? @relation(fields: [constituencyId], references: [id])
+
+  upazilaId String?
+  upazila   Upazila? @relation(fields: [upazilaId], references: [id])
+
+  unionId String?
+  union   Union?  @relation(fields: [unionId], references: [id])
+
+  voteEntries VoteEntry[]
+}
+
+model VoteEntry {
+  id          String     @id @default(uuid())
+  centerId    String
+  center      VoteCenter @relation(fields: [centerId], references: [id])
+  candidateId String
+  candidate   Candidate  @relation(fields: [candidateId], references: [id])
+  voteCount   Int
+
+  submittedByUserId String
+  submittedByUser   User   @relation(fields: [submittedByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([centerId, candidateId])
+}

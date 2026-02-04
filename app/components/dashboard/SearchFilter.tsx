@@ -75,7 +75,7 @@ export function SearchFilter() {
     if (selectedUpazila) params.set("upazilaId", selectedUpazila);
     if (selectedUnion) params.set("unionId", selectedUnion);
     if (selectedCenter) params.set("centerId", selectedCenter);
-
+    
     // Navigate to /results with the params
     // Use navigate from react-router for client-side transition
     navigate(`/results?${params.toString()}`);

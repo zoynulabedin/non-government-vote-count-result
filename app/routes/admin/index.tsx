@@ -293,8 +293,8 @@ export default function VoteEntries() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex justify-between items-center">
-        <div>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4 sm:gap-0">
+        <div className="text-center sm:text-left">
           <h1 className="text-2xl font-bold text-slate-800">
             Welcome, {user?.username}
           </h1>
@@ -304,11 +304,11 @@ export default function VoteEntries() {
               : "User Dashboard - Enter Vote Results"}
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-center sm:text-right w-full sm:w-auto bg-slate-50 sm:bg-transparent p-4 sm:p-0 rounded-lg sm:rounded-none">
           <div className="text-sm font-medium text-slate-600">
             Progress Overview
           </div>
-          <div className="flex items-center gap-2 justify-end">
+          <div className="flex items-center gap-2 justify-center sm:justify-end">
             <div className="text-2xl font-bold text-slate-800">
               {completedCenters}{" "}
               <span className="text-slate-400 text-lg">/ {totalAssigned}</span>

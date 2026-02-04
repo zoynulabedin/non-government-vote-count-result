@@ -42,9 +42,9 @@ export default function Home() {
 
         {/* Top Stats Section */}
         <section className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold flex items-center">
-              <Activity className="mr-2 h-6 w-6 text-red-600" />
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h2 className="text-xl md:text-2xl font-bold flex items-center">
+              <Activity className="mr-2 h-6 w-6 text-red-600 flex-shrink-0" />
               Live National Results
             </h2>
             <div className="text-sm text-slate-500 bg-white px-3 py-1 rounded-full shadow-sm border">

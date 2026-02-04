@@ -232,11 +232,11 @@ export default function Results() {
 
         {/* Top Stats Section */}
         <section className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold flex items-center">
-              <Activity className="mr-2 h-6 w-6 text-red-600" />
-              Live Results: {locationName}{" "}
-              <span className="text-slate-500 text-lg font-normal ml-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+            <h2 className="text-xl md:text-2xl font-bold flex items-center flex-wrap">
+              <Activity className="mr-2 h-6 w-6 text-red-600 flex-shrink-0" />
+              <span>Live Results: {locationName}</span>
+              <span className="text-slate-500 text-base md:text-lg font-normal ml-2 whitespace-nowrap">
                 ({locationType})
               </span>
             </h2>

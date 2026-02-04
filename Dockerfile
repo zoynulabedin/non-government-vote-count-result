@@ -38,7 +38,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 
 # Install production dependencies
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && npm install prisma
 
 # Copy the generated Prisma Client from the builder stage
 # This is crucial because 'npm ci --omit=dev' won't run the generation script effectively without the CLI
@@ -54,4 +54,4 @@ COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]

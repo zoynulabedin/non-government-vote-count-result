@@ -38,7 +38,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/package-lock.json ./package-lock.json
 
 # Install production dependencies
-RUN npm ci --omit=dev && npm install prisma
+RUN npm ci --omit=dev && npm install prisma dotenv
 
 # Copy the generated Prisma Client from the builder stage
 # This is crucial because 'npm ci --omit=dev' won't run the generation script effectively without the CLI
@@ -49,6 +49,8 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
 # Copy prisma schema in case it's needed at runtime (e.g. for migrations, though usually not recommended in the app container)
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
 # Expose the port the app runs on
 EXPOSE 3000

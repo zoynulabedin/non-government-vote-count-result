@@ -27,7 +27,7 @@ export type LocationStats = {
 function getPartyColor(party: string) {
   const p = party.trim();
   const colors: Record<string, string> = {
-    "BNP": "border-green-500",
+    BNP: "border-green-500",
     "Awami League": "border-red-500",
     "Jamat-e-Islami": "border-sky-500",
     "Bangladesh Jamaat-e-Islami": "border-sky-500",
@@ -59,23 +59,45 @@ export async function getVoteStats(
   // Fetch candidate details
   const candidates = await prisma.candidate.findMany();
 
-  const results = votes
-    .map((v: any) => {
-      const candidate = candidates.find((c: any) => c.id === v.candidateId);
-      const count = v._sum.voteCount || 0;
-      const percentage =
-        totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : "0";
+  const candidateResults = votes.map((v: any) => {
+    const candidate = candidates.find((c: any) => c.id === v.candidateId);
+    const count = v._sum.voteCount || 0;
 
-      return {
-        candidateName: candidate?.name || "Unknown",
-        partyName: candidate?.party || "Unknown",
-        voteCount: count,
-        percentage: parseFloat(percentage),
-        color: getPartyColor(candidate?.party || ""),
-        symbol: candidate?.symbol || undefined,
-      };
-    })
-    .sort((a: any, b: any) => b.voteCount - a.voteCount);
+    return {
+      candidateName: candidate?.name || "Unknown",
+      partyName: candidate?.party || "Unknown",
+      voteCount: count,
+      color: getPartyColor(candidate?.party || ""),
+      symbol: candidate?.symbol || undefined,
+    };
+  });
+
+  // Aggregate results by party
+  const partyMap = new Map<string, VoteResult>();
+
+  for (const res of candidateResults) {
+    const existing = partyMap.get(res.partyName);
+    if (existing) {
+      existing.voteCount += res.voteCount;
+      // Keep the first candidate's symbol if available, or just keep as is
+    } else {
+      partyMap.set(res.partyName, {
+        ...res,
+        candidateName: "Various Candidates", // Aggregated view
+        percentage: 0, // Will calculate later
+      });
+    }
+  }
+
+  const results = Array.from(partyMap.values())
+    .map((r) => ({
+      ...r,
+      percentage:
+        totalVotes > 0
+          ? parseFloat(((r.voteCount / totalVotes) * 100).toFixed(1))
+          : 0,
+    }))
+    .sort((a, b) => b.voteCount - a.voteCount);
 
   const leadingParty =
     results.length > 0
